@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mocking Text Generator</title>
+    <meta name="description" content="Turn any text into sPoNgEbOb mOcKiNg cAsE. Paste, mockify, copy." />
+    <style>
+      :root {
+        --bg: #0f1220;
+        --bg2: #13162a;
+        --card: #151933;
+        --text: #e8eaf6;
+        --muted: #a9acc4;
+        --accent: #8a7cff;
+        --accent-2: #23d5ab;
+        --border: rgba(255,255,255,0.08);
+        --shadow: 0 10px 30px rgba(0,0,0,0.35);
+        --radius: 14px;
+      }
+      html, body {
+        height: 100%;
+      }
+      body {
+        margin: 0;
+        font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+        color: var(--text);
+        background: linear-gradient(135deg, #0c0f1e, #121735 40%, #0f1220);
+        display: grid;
+        place-items: center;
+        padding: 24px;
+      }
+      .app {
+        width: min(920px, 96vw);
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)) padding-box, linear-gradient(135deg, rgba(138,124,255,0.35), rgba(35,213,171,0.25)) border-box;
+        border: 1px solid transparent;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .header {
+        padding: 22px 26px;
+        background: radial-gradient(1200px 300px at -10% -30%, rgba(138,124,255,0.2), transparent 60%), radial-gradient(1200px 300px at 110% -30%, rgba(35,213,171,0.18), transparent 60%), linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+        border-bottom: 1px solid var(--border);
+      }
+      h1 {
+        margin: 0 0 6px;
+        font-size: 22px;
+        letter-spacing: 0.3px;
+      }
+      .sub {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .content {
+        display: grid;
+        gap: 16px;
+        grid-template-columns: 1fr;
+        padding: 22px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      }
+      @media (min-width: 860px) {
+        .content {
+          grid-template-columns: 1fr 1fr;
+          gap: 18px;
+        }
+      }
+      .panel {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 14px;
+        min-height: 240px;
+      }
+      label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 13px;
+        color: var(--muted);
+      }
+      textarea {
+        width: 100%;
+        min-height: 200px;
+        resize: vertical;
+        padding: 14px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: #0f142b;
+        color: var(--text);
+        line-height: 1.45;
+        font-size: 14px;
+        outline: none;
+        transition: box-shadow .2s ease, border-color .2s ease, background .2s ease;
+      }
+      textarea:focus {
+        border-color: rgba(138,124,255,0.45);
+        box-shadow: 0 0 0 3px rgba(138,124,255,0.2);
+        background: #0d1230;
+      }
+      .controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        align-items: center;
+        justify-content: flex-start;
+      }
+      .spacer {
+        flex: 1 1 auto;
+      }
+      button {
+        appearance: none;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(138,124,255,0.18), rgba(35,213,171,0.14));
+        color: var(--text);
+        padding: 10px 14px;
+        border-radius: 10px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: transform .06s ease, box-shadow .2s ease, border-color .2s ease, background .2s ease;
+      }
+      button:hover {
+        border-color: rgba(255,255,255,0.18);
+        box-shadow: 0 6px 16px rgba(0,0,0,0.28);
+      }
+      button:active {
+        transform: translateY(1px);
+      }
+      .ghost {
+        background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+      }
+      .hint {
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .footer {
+        padding: 14px 22px 20px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--muted);
+        font-size: 12px;
+        background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0));
+      }
+      .kbd {
+        display: inline-block;
+        border: 1px solid var(--border);
+        background: rgba(255,255,255,0.04);
+        padding: 2px 6px;
+        border-radius: 6px;
+        font-size: 11px;
+        color: var(--text);
+      }
+      .toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
+        cursor: pointer;
+        user-select: none;
+      }
+      .toggle input {
+        accent-color: var(--accent);
+      }
+      .badge {
+        font-size: 11px;
+        color: var(--muted);
+        padding: 2px 8px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(255,255,255,0.03);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app" role="application" aria-label="Mocking Text Generator">
+      <header class="header">
+        <h1>Mocking Text Generator</h1>
+        <p class="sub">Paste text. Click Mockify. Copy. Done. sPoNgEbOb lEvEl: uNlOcKeD.</p>
+      </header>
+      <section class="content">
+        <div class="panel">
+          <label for="inputText">Your text</label>
+          <textarea id="inputText" placeholder="Type or paste your serious, well‑crafted prose here…"></textarea>
+          <div class="controls">
+            <button id="mockifyBtn" title="Convert to mocking case (Cmd/Ctrl + Enter)">Mockify</button>
+            <label class="toggle" title="Automatically mockify as you type">
+              <input id="liveToggle" type="checkbox" />
+              Live
+            </label>
+            <span class="spacer"></span>
+            <span class="hint">Tip: Press <span class="kbd">Cmd/Ctrl</span> + <span class="kbd">Enter</span></span>
+          </div>
+        </div>
+        <div class="panel">
+          <label for="outputText">Mocked result <span class="badge">read‑only</span></label>
+          <textarea id="outputText" readonly placeholder="You’ll see your mOcKeD tExT hErE…"></textarea>
+          <div class="controls">
+            <button id="copyBtn" title="Copy mocked text to clipboard">Copy</button>
+            <button id="remockBtn" class="ghost" title="Remix the randomness">Remock</button>
+            <span class="spacer"></span>
+            <span class="hint">Copied text keeps line breaks & punctuation</span>
+          </div>
+        </div>
+      </section>
+      <footer class="footer">
+        <span>“AI AuGmENts thINkInG; it dOEs NoT RePLaCe iT”</span>
+        <span class="spacer"></span>
+        <span class="hint">Works offline • Single HTML file</span>
+      </footer>
+    </main>
+
+    <script>
+      function isAlphabeticCharacter(character) {
+        return /[A-Za-z]/.test(character);
+      }
+
+      function generateMockingCase(source) {
+        let result = "";
+        for (let i = 0; i < source.length; i += 1) {
+          const ch = source[i];
+          if (!isAlphabeticCharacter(ch)) {
+            result += ch;
+            continue;
+          }
+          // Randomly upper/lower each letter (50/50), keeping punctuation/spacing intact.
+          result += Math.random() < 0.5 ? ch.toLowerCase() : ch.toUpperCase();
+        }
+        return result;
+      }
+
+      function selectAllAndFocus(element) {
+        element.focus();
+        element.select();
+      }
+
+      function tryCopyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          return navigator.clipboard.writeText(text);
+        }
+        return new Promise(function(resolve, reject) {
+          try {
+            const helper = document.createElement("textarea");
+            helper.value = text;
+            helper.setAttribute("readonly", "");
+            helper.style.position = "fixed";
+            helper.style.opacity = "0";
+            document.body.appendChild(helper);
+            helper.select();
+            const ok = document.execCommand("copy");
+            document.body.removeChild(helper);
+            ok ? resolve() : reject(new Error("Copy command failed"));
+          } catch (err) {
+            reject(err);
+          }
+        });
+      }
+
+      (function init() {
+        const inputEl = document.getElementById("inputText");
+        const outputEl = document.getElementById("outputText");
+        const mockifyBtn = document.getElementById("mockifyBtn");
+        const copyBtn = document.getElementById("copyBtn");
+        const remockBtn = document.getElementById("remockBtn");
+        const liveToggle = document.getElementById("liveToggle");
+
+        function mockifyNow() {
+          const text = inputEl.value || "";
+          const mocked = generateMockingCase(text);
+          outputEl.value = mocked;
+        }
+
+        mockifyBtn.addEventListener("click", function() {
+          mockifyNow();
+          selectAllAndFocus(outputEl);
+        });
+
+        remockBtn.addEventListener("click", function() {
+          mockifyNow();
+          selectAllAndFocus(outputEl);
+        });
+
+        copyBtn.addEventListener("click", function() {
+          const text = outputEl.value || "";
+          if (!text) return;
+          tryCopyToClipboard(text).then(function() {
+            copyBtn.textContent = "Copied ✓";
+            setTimeout(function() { copyBtn.textContent = "Copy"; }, 900);
+          }).catch(function() {
+            copyBtn.textContent = "Press ⌘/Ctrl+C";
+            selectAllAndFocus(outputEl);
+            setTimeout(function() { copyBtn.textContent = "Copy"; }, 1200);
+          });
+        });
+
+        inputEl.addEventListener("input", function() {
+          if (liveToggle.checked) {
+            mockifyNow();
+          }
+        });
+
+        document.addEventListener("keydown", function(e) {
+          const metaOrCtrl = e.metaKey || e.ctrlKey;
+          if (metaOrCtrl && e.key === "Enter") {
+            e.preventDefault();
+            mockifyNow();
+            selectAllAndFocus(outputEl);
+          }
+        });
+
+        // Seed example
+        inputEl.value = "AI augments thinking; it does not replace it";
+        mockifyNow();
+      })();
+    </script>
+  </body>
+  </html>
+
+
